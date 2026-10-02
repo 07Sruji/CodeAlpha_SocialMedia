@@ -1,0 +1,195 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{% block title %}Connectly{% endblock %}</title>
+
+    <link rel="stylesheet" href="{% static 'social/css/style.css' %}">
+</head>
+
+<body>
+
+{% if user.is_authenticated %}
+
+<aside class="side">
+
+    <!-- BRAND -->
+    <a class="brand" href="{% url 'home' %}">
+
+        <b>C</b>
+
+        <span>
+            Connectly
+            <small>
+                Real People. Meaningful Connections.
+            </small>
+        </span>
+
+    </a>
+
+
+    <!-- NAVIGATION -->
+    <nav>
+
+        <a href="{% url 'home' %}">
+            🏠 Home
+        </a>
+
+        <a href="{% url 'saved' %}">
+            🔖 Saved
+        </a>
+
+        <a href="{% url 'profile' user.username %}">
+            👤 Profile
+        </a>
+
+    </nav>
+
+
+    <!-- MOTTO -->
+    <div class="motto">
+
+        <strong>
+            Better Together ♡
+        </strong>
+
+        <small>
+            Share, connect and grow with your community.
+        </small>
+
+    </div>
+
+
+    <!-- LEFT SIDEBAR PROFILE -->
+    <div class="side-user">
+
+        <a
+            href="{% url 'profile' user.username %}"
+            class="side-user-avatar">
+
+            {% if user.profile.profile_image %}
+
+                <img
+                    src="{{ user.profile.profile_image.url }}"
+                    alt="Profile Picture">
+
+            {% else %}
+
+                <i>
+                    {{ user.username|first|upper }}
+                </i>
+
+            {% endif %}
+
+        </a>
+
+
+        <span>
+
+            <strong>
+                {{ user.get_full_name|default:user.username }}
+            </strong>
+
+            <small>
+                @{{ user.username }}
+            </small>
+
+        </span>
+
+    </div>
+
+
+    <!-- LOGOUT -->
+    <form
+        method="post"
+        action="{% url 'logout' %}">
+
+        {% csrf_token %}
+
+        <button type="submit">
+            ↪ Logout
+        </button>
+
+    </form>
+
+</aside>
+
+
+<!-- MAIN -->
+<main class="main">
+
+
+    <!-- TOP HEADER -->
+    <header class="top-header">
+
+        <div>
+
+            <h2>
+                Good to see you 👋
+            </h2>
+
+            <small>
+                Stay connected with your community.
+            </small>
+
+        </div>
+
+
+        <!-- TOP RIGHT -->
+        <div>
+
+            <span class="search">
+
+                🔍
+
+                <input
+                    type="text"
+                    placeholder="Search Connectly...">
+
+            </span>
+
+
+
+        </div>
+
+    </header>
+
+
+    <!-- MESSAGES -->
+    {% if messages %}
+
+        {% for message in messages %}
+
+            <div class="toast">
+                {{ message }}
+            </div>
+
+        {% endfor %}
+
+    {% endif %}
+
+
+    <!-- PAGE CONTENT -->
+    {% block content %}
+    {% endblock %}
+
+
+</main>
+
+
+{% else %}
+
+    <!-- LOGIN / REGISTER PAGES -->
+    {% block auth_content %}
+    {% endblock %}
+
+{% endif %}
+
+
+<script src="{% static 'social/js/script.js' %}"></script>
+
+</body>
+</html>

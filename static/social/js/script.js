@@ -1,0 +1,1 @@
+document.querySelectorAll('.showpass').forEach(b=>b.addEventListener('click',()=>{const i=document.getElementById(b.dataset.id);i.type=i.type==='password'?'text':'password';b.textContent=i.type==='password'?'◉':'◎'}));

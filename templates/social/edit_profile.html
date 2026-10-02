@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="formpage">
+
+    <div class="card formcard">
+
+        <h1>Edit Profile</h1>
+
+        <form method="post" enctype="multipart/form-data">
+
+            {% csrf_token %}
+
+            {{ user_form.as_p }}
+
+            {{ profile_form.as_p }}
+
+            <button class="primary">
+                Save Changes →
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,823 @@
+{% extends 'base.html' %}
+
+{% block title %}Home · Connectly{% endblock %}
+
+{% block content %}
+
+<div class="dashboard">
+
+    <section>
+
+        <!-- CREATE POST -->
+        <div class="card create">
+
+            <div class="heading">
+
+                {% if user.profile.profile_image %}
+
+                    <img
+                        src="{{ user.profile.profile_image.url }}"
+                        alt="Profile Picture"
+                        class="create-profile-picture">
+
+                {% else %}
+
+                    <i>
+                        {% if user.first_name %}
+                            {{ user.first_name|first|upper }}
+                        {% else %}
+                            {{ user.username|first|upper }}
+                        {% endif %}
+                    </i>
+
+                {% endif %}
+
+                <div>
+                    <h3>Create Post</h3>
+
+                    <small>
+                        Share your thoughts, ideas or something interesting...
+                    </small>
+                </div>
+
+            </div>
+
+
+            <form
+                method="post"
+                action="{% url 'create_post' %}"
+                enctype="multipart/form-data"
+                id="postForm">
+
+                {% csrf_token %}
+
+                <!-- POST TYPE -->
+                <div class="select">
+
+                    <label>Post type</label>
+
+                    {{ post_form.post_type }}
+
+                </div>
+
+
+                <!-- COMMON CONTENT -->
+                <div
+                    class="post-field active"
+                    id="contentFields">
+
+                    <label>Content / Caption</label>
+
+                    {{ post_form.content }}
+
+                </div>
+
+
+                <!-- IMAGE -->
+                <div
+                    id="imageFields"
+                    class="post-field hidden-field">
+
+                    <label>Upload image</label>
+
+                    {{ post_form.image }}
+
+                </div>
+
+
+                <!-- VIDEO -->
+                <div
+                    id="videoFields"
+                    class="post-field hidden-field">
+
+                    <label>Upload video</label>
+
+                    {{ post_form.video }}
+
+                </div>
+
+
+                <!-- LINK -->
+                <div
+                    id="linkFields"
+                    class="post-field hidden-field">
+
+                    <label>Link URL</label>
+
+                    {{ post_form.link_url }}
+
+                    <label>Link title</label>
+
+                    {{ post_form.link_title }}
+
+                </div>
+
+
+                <!-- POLL -->
+                <div
+                    id="pollFields"
+                    class="post-field hidden-field">
+
+                    <label>Poll options</label>
+
+                    {{ post_form.poll_options }}
+
+                    <small>
+                        Enter one option per line.
+                    </small>
+
+                </div>
+
+
+                <!-- LOCATION -->
+                <div
+                    id="locationFields"
+                    class="post-field hidden-field">
+
+                    <label>Location</label>
+
+                    {{ post_form.location_name }}
+
+                </div>
+
+
+                <!-- EVENT -->
+                <div
+                    id="eventFields"
+                    class="post-field hidden-field">
+
+                    <label>Event title</label>
+
+                    {{ post_form.event_title }}
+
+                    <label>Event date</label>
+
+                    {{ post_form.event_date }}
+
+                    <label>Event location</label>
+
+                    {{ post_form.event_location }}
+
+                </div>
+
+
+                <!-- POST BAR -->
+                <div class="postbar">
+
+                    <span>🖼 Photo</span>
+                    <span>🎥 Video</span>
+                    <span>📊 Poll</span>
+                    <span>📍 Location</span>
+
+                    <button
+                        type="submit"
+                        class="primary small">
+
+                        Post →
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+
+        <!-- FEED TABS -->
+        <div class="tabs">
+
+            <b>For You</b>
+
+            <span>Most Recent⌄</span>
+
+        </div>
+
+
+        <!-- POSTS -->
+        {% for post in posts %}
+
+        <article class="card post">
+
+            <!-- POST HEADER -->
+            <div class="posttop">
+
+                <a href="{% url 'profile' post.user.username %}">
+
+                    {% if post.user.profile.profile_image %}
+
+                        <img
+                            src="{{ post.user.profile.profile_image.url }}"
+                            alt="Profile Picture"
+                            class="post-profile-picture">
+
+                    {% else %}
+
+                        <i>
+
+                            {% if post.user.first_name %}
+
+                                {{ post.user.first_name|first|upper }}
+
+                            {% else %}
+
+                                {{ post.user.username|first|upper }}
+
+                            {% endif %}
+
+                        </i>
+
+                    {% endif %}
+
+
+                    <strong>
+
+                        {{ post.user.username }}
+
+                        <small>
+                            {{ post.created_at|timesince }} ago
+                        </small>
+
+                    </strong>
+
+                </a>
+
+
+                <!-- DELETE / FOLLOW -->
+                {% if post.user == user %}
+
+                    <form
+                        method="post"
+                        action="{% url 'delete_post' post.pk %}">
+
+                        {% csrf_token %}
+
+                        <button
+                            type="submit"
+                            class="delete-post">
+
+                            Delete
+
+                        </button>
+
+                    </form>
+
+                {% else %}
+
+                    <a
+                        class="follow"
+                        href="{% url 'follow' post.user.username %}">
+
+                        Follow
+
+                    </a>
+
+                {% endif %}
+
+            </div>
+
+
+            <!-- POST CONTENT -->
+            {% if post.content %}
+
+            <p>
+                {{ post.content|linebreaksbr }}
+            </p>
+
+            {% endif %}
+
+
+            <!-- POST IMAGE -->
+            {% if post.image %}
+
+            <img
+                src="{{ post.image.url }}"
+                alt="Post image">
+
+            {% endif %}
+
+
+            <!-- POST VIDEO -->
+            {% if post.video %}
+
+            <video controls>
+
+                <source src="{{ post.video.url }}">
+
+            </video>
+
+            {% endif %}
+
+
+            <!-- LINK -->
+            {% if post.link_url %}
+
+            <a
+                class="box"
+                href="{{ post.link_url }}"
+                target="_blank">
+
+                <b>
+                    {{ post.link_title|default:post.link_url }}
+                </b>
+
+                <small>
+                    {{ post.link_url }}
+                </small>
+
+            </a>
+
+            {% endif %}
+
+
+            <!-- LOCATION -->
+            {% if post.location_name %}
+
+            <div class="box">
+
+                📍
+
+                <b>
+                    {{ post.location_name }}
+                </b>
+
+            </div>
+
+            {% endif %}
+
+
+            <!-- EVENT -->
+            {% if post.event_title %}
+
+            <div class="box">
+
+                🎉
+
+                <b>
+                    {{ post.event_title }}
+                </b>
+
+                <small>
+
+                    {{ post.event_date|date:"M d, Y · h:i A" }}
+
+                    ·
+
+                    {{ post.event_location }}
+
+                </small>
+
+            </div>
+
+            {% endif %}
+
+
+            <!-- POLL -->
+            {% if post.post_type == "poll" %}
+
+            <div class="poll">
+
+                {% for option in post.poll_options.all %}
+
+                <a
+                    href="{% url 'vote' post.pk option.pk %}">
+
+                    {{ option.text }}
+
+                    <span>
+                        {{ option.votes.count }}
+                    </span>
+
+                </a>
+
+                {% endfor %}
+
+            </div>
+
+            {% endif %}
+
+
+            <!-- POST ACTIONS -->
+            <div class="meta">
+
+                ❤️ {{ post.likes.count }}
+
+                &nbsp;&nbsp;
+
+                💬 {{ post.comments.count }}
+
+                <span>
+
+                    <a
+                        class="{% if post.pk in liked %}on{% endif %}"
+                        href="{% url 'like' post.pk %}">
+
+                        ♥ Like
+
+                    </a>
+
+
+                    <a
+                        href="#comment{{ post.pk }}">
+
+                        💬 Comment
+
+                    </a>
+
+
+                    <a
+                        href="{% url 'bookmark' post.pk %}">
+
+                        🔖
+
+                        {% if post.pk in saved %}
+
+                            Saved
+
+                        {% else %}
+
+                            Save
+
+                        {% endif %}
+
+                    </a>
+
+                </span>
+
+            </div>
+
+
+            <!-- COMMENTS -->
+            <div class="comments">
+
+                {% for comment in post.comments.all %}
+
+                <div>
+
+                    <b>
+                        {{ comment.user.username }}
+                    </b>
+
+                    {{ comment.content }}
+
+                    <small>
+                        {{ comment.created_at|timesince }} ago
+                    </small>
+
+                </div>
+
+                {% empty %}
+
+                <small>
+                    No comments yet.
+                </small>
+
+                {% endfor %}
+
+
+                <!-- COMMENT FORM -->
+                <form
+                    method="post"
+                    action="{% url 'comment' post.pk %}"
+                    id="comment{{ post.pk }}">
+
+                    {% csrf_token %}
+
+                    <input
+                        type="text"
+                        name="content"
+                        placeholder="Write a comment..."
+                        required>
+
+                    <button type="submit">
+                        Send
+                    </button>
+
+                </form>
+
+            </div>
+
+        </article>
+
+
+        {% empty %}
+
+        <div class="card empty">
+
+            <h3>
+                No posts yet
+            </h3>
+
+            <p>
+                Create your first post and start connecting.
+            </p>
+
+        </div>
+
+        {% endfor %}
+
+    </section>
+
+
+    <!-- RIGHT SIDEBAR -->
+    <aside class="right">
+
+
+        <!-- PROFILE CARD -->
+        <div class="card profilebox">
+
+            <div class="cover"></div>
+
+
+            {% if user.profile.profile_image %}
+
+                <img
+                    src="{{ user.profile.profile_image.url }}"
+                    alt="Profile Picture"
+                    class="sidebar-profile-picture">
+
+            {% else %}
+
+                <i class="big">
+
+                    {% if user.first_name %}
+
+                        {{ user.first_name|first|upper }}
+
+                    {% else %}
+
+                        {{ user.username|first|upper }}
+
+                    {% endif %}
+
+                </i>
+
+            {% endif %}
+
+
+            <h3>
+
+                {{ user.get_full_name|default:user.username }}
+
+            </h3>
+
+
+            <small>
+                @{{ user.username }}
+            </small>
+
+
+            <p>
+                B.Tech IT · VITW, Vijayawada · 2027
+            </p>
+
+
+            <p>
+                Dream · Learn · Build · Grow
+            </p>
+
+
+            <a
+                class="outline"
+                href="{% url 'edit_profile' %}">
+
+                Edit Profile
+
+            </a>
+
+        </div>
+
+
+        <!-- TRENDING -->
+        <div class="card sidecard">
+
+            <h3>
+                🔥 Trending Topics
+            </h3>
+
+
+            <p>
+
+                #technology
+
+                <small>
+                    1.2k posts
+                </small>
+
+            </p>
+
+
+            <p>
+
+                #learning
+
+                <small>
+                    856 posts
+                </small>
+
+            </p>
+
+
+            <p>
+
+                #motivation
+
+                <small>
+                    743 posts
+                </small>
+
+            </p>
+
+
+            <p>
+
+                #coding
+
+                <small>
+                    672 posts
+                </small>
+
+            </p>
+
+        </div>
+
+
+        <!-- SAVED POSTS -->
+        <div class="card sidecard">
+
+            <h3>
+                🔖 Saved Posts
+            </h3>
+
+            <p>
+                Keep useful posts for later.
+            </p>
+
+            <a href="{% url 'saved' %}">
+                See all →
+            </a>
+
+        </div>
+
+    </aside>
+
+</div>
+
+
+<!-- POST TYPE SCRIPT -->
+<script>
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        const select =
+            document.querySelector(".select select");
+
+
+        const fields = {
+
+            text:
+                document.getElementById(
+                    "contentFields"
+                ),
+
+            image:
+                document.getElementById(
+                    "imageFields"
+                ),
+
+            video:
+                document.getElementById(
+                    "videoFields"
+                ),
+
+            link:
+                document.getElementById(
+                    "linkFields"
+                ),
+
+            poll:
+                document.getElementById(
+                    "pollFields"
+                ),
+
+            location:
+                document.getElementById(
+                    "locationFields"
+                ),
+
+            event:
+                document.getElementById(
+                    "eventFields"
+                )
+
+        };
+
+
+        function updateFields() {
+
+            Object.values(fields).forEach(
+                function (field) {
+
+                    if (field) {
+
+                        field.classList.remove(
+                            "active"
+                        );
+
+                    }
+
+                }
+            );
+
+
+            const selected =
+                select.value;
+
+
+            if (fields[selected]) {
+
+                fields[selected]
+                    .classList.add("active");
+
+            }
+
+        }
+
+
+        if (select) {
+
+            select.addEventListener(
+                "change",
+                updateFields
+            );
+
+            updateFields();
+
+        }
+
+    }
+
+);
+
+</script>
+
+
+<!-- PROFILE / POST PICTURE CSS -->
+<style>
+
+.post-profile-picture {
+
+    width: 45px;
+    height: 45px;
+
+    border-radius: 50%;
+
+    object-fit: cover;
+
+    display: block;
+
+}
+
+
+.create-profile-picture {
+
+    width: 45px;
+    height: 45px;
+
+    border-radius: 50%;
+
+    object-fit: cover;
+
+    display: block;
+
+}
+
+
+.sidebar-profile-picture {
+
+    width: 90px;
+    height: 90px;
+
+    border-radius: 50%;
+
+    object-fit: cover;
+
+    display: block;
+
+    margin: 0 auto;
+
+}
+
+.posttop strong {
+    font-size: 17px;
+}
+
+.posttop strong small {
+    font-size: 13px;
+}
+
+</style>
+
+{% endblock %}
