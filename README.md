@@ -1,31 +1,27 @@
-# Connectly — CodeAlpha Task 2
+# CodeAlpha Social Media Platform
 
-Django social media platform with authentication, profiles, multiple post types, comments, likes, follows, bookmarks, and Community Challenges as the unique feature.
-
-## Stack
-Python · Django 5.2.17 · SQLite · HTML · CSS · JavaScript · Pillow
-
-## Windows setup
-```powershell
-cd C:\Users\HAI\OneDrive\Desktop\CodeAlpha_SocialMedia
-python -m venv venv
-.\venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-python manage.py makemigrations
-python manage.py migrate
-python manage.py createsuperuser
-python manage.py runserver
-```
-Open http://127.0.0.1:8000/
+A social media web application developed using Python and Django.
 
 ## Features
-- Login/Register/Logout + show/hide password
-- Profiles
-- Text/Image/Video/Link/Poll/Location/Event posts
-- Comments
-- Like/Unlike
-- Follow/Unfollow
-- Bookmarks
-- Community Challenges: join, participants, challenge posts, completion
+- User profiles
+- Create and view posts
+- Like and comment on posts
+- Follow and unfollow users
 
-The Google button in the login design is a visual placeholder; real OAuth is intentionally outside the selected scope.
+## Technologies
+- Python
+- Django
+- SQLite
+- Pillow
+
+## Setup
+1. Clone this repository.
+2. Create and activate a virtual environment.
+3. Install dependencies:
+   pip install -r requirements.txt
+4. Apply migrations:
+   python manage.py migrate
+5. Run the server:
+   python manage.py runserver
+
+Open http://127.0.0.1:8000/ in your browser.
